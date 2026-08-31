@@ -25,3 +25,37 @@ interface PushNotification extends BaseNotification {
 }
 Chứng minh rằng không thể truyền nhầm một MessageChannel<BaseNotification> vào hàm chỉ chấp nhận MessageChannel<PushNotification>.
 */
+export {};
+interface MessageChannel<in out T>{
+  publish(message: T): void;
+  subscribe(handler: (message: T) => void): void;
+}
+
+class InMemoryChannel<in out T> implements MessageChannel<T>{
+  handlers: ((message: T) => void)[] = [];
+  
+  subscribe(handler: (message: T) => void): void{
+    this.handlers.push(handler)
+  }
+
+  publish(message: T): void {
+    this.handlers.forEach(handler => {
+      handler(message)
+    })
+  }
+}
+interface BaseNotification {
+  id: string;
+}
+
+interface PushNotification extends BaseNotification {
+  deviceToken: string;
+}
+
+function attachPushListener(channel: MessageChannel<PushNotification>){
+  channel.subscribe((push) => {
+    console.log(`Đang gửi đến token: ${push.deviceToken}`);    
+  })
+}
+
+const baseChannel = new InMemoryChannel<BaseNotification>()
