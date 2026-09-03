@@ -33,3 +33,11 @@ function isUserProfile(value: unknown): value is UserProfile{
     typeof (value as { email: unknown }).email === "string"
   );
 }
+
+const apiPayload: unknown = JSON.parse('{"id": 404, "email": "dev@test.local"}');
+if(isUserProfile(apiPayload)){
+  // apiPayload được thu hẹp thành UserProfile an toàn
+  console.log(`ID người dùng: ${apiPayload.id}, Email: ${apiPayload.email.toLowerCase()}`);
+}else{
+  console.log(`Định dạng hồ sơ người dùng không hợp lệ`);
+}
